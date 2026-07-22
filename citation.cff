@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: "JA-ES: Judgment Assurance Evidence Schema"
+message: "If you use this specification, please cite it as below."
+type: software
+authors:
+  - family-names: Kavalir
+    given-names: Justin
+    affiliation: "Judgment Assurance Institute, LLC"
+version: 0.6.0
+date-released: 2026-07-22
+license: CC-BY-4.0
+repository-code: "https://github.com/judgmentassurance/ja-es"
+abstract: >-
+  A machine-readable specification for evidence of human judgment over
+  AI-mediated consequential decisions. Defines three immutable record types
+  (judgment record, governance judgment record, auto-execution log),
+  canonicalized under RFC 8785, sealed with SHA-256, and chained by sequence
+  number and prior-record hash.
+keywords:
+  - AI governance
+  - auditability
+  - evidence
+  - human oversight
+  - accountability
+# After minting the Zenodo DOI, add it here:
+# doi: 10.5281/zenodo.XXXXXXX
+# If you obtain an ORCID iD, add it under the author entry as:
+#     orcid: "https://orcid.org/0000-0000-0000-0000"
