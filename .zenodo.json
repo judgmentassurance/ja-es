@@ -1,0 +1,37 @@
+{
+  "title": "JA-ES: Judgment Assurance Evidence Schema v0.6",
+  "upload_type": "software",
+  "license": "cc-by-4.0",
+  "version": "0.6.0",
+  "creators": [
+    {
+      "name": "Kavalir, Justin",
+      "affiliation": "Judgment Assurance Institute, LLC"
+    }
+  ],
+  "description": "<p>JA-ES is a machine-readable specification for evidence of human judgment over AI-mediated consequential decisions. It defines three immutable record types: a <strong>judgment record</strong>, evidencing that a named person accepted, modified, rejected, escalated, or deferred an AI output with structured reasoning and named ownership; a <strong>governance judgment record</strong>, evidencing that a named person authorized a defined population to proceed without contemporaneous human review, and recorded why; and an <strong>auto-execution log</strong>, evidencing a decision executed inside such a boundary, hash-linked back to the governance judgment that authorized it, with per-condition proof and an explicit record of the action actually executed.</p><p>Records are canonicalized under RFC 8785, sealed with SHA-256, and chained by sequence number and prior-record hash. Every governance boundary separately states when automation may act and which actions it may execute; every auto-execution log separately records the recommended action and the action actually executed, and the reference verifier confirms they match and were permitted by the sealed boundary.</p><p>The release includes a reference verifier, eight valid examples, 44 records that must fail schema validation, seven schema-valid records that must fail integrity verification, three sealed scenarios that must fail cross-record action verification, and a prototype reconciliation control for population completeness.</p><p><strong>Status: draft for review. Validated against the bundled reference implementation and interactive demo; not yet validated in a production workflow.</strong></p>",
+  "keywords": [
+    "AI governance",
+    "auditability",
+    "evidence",
+    "human oversight",
+    "accountability",
+    "JSON Schema",
+    "RFC 8785"
+  ],
+  "_comment_related_identifiers": "PLACEHOLDERS - replace the identifier values below with the real ones before publishing, or delete any entry you are not ready to link. Zenodo will reject malformed identifiers.",
+  "related_identifiers": [
+    {
+      "identifier": "PLACEHOLDER-REPLACE-WITH-SSRN-URL",
+      "relation": "isSupplementedBy",
+      "scheme": "url",
+      "resource_type": "publication-preprint"
+    },
+    {
+      "identifier": "PLACEHOLDER-REPLACE-WITH-CROSSWALK-DOI",
+      "relation": "references",
+      "scheme": "doi",
+      "resource_type": "publication-report"
+    }
+  ]
+}
