@@ -1,0 +1,70 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install jsonschema rfc8785
+
+      # ---- positive checks: these must pass ----
+
+      - name: Canonicalization and hashing match the published vectors
+        run: python verify.py --self-test
+
+      - name: Published examples verify clean
+        run: python verify.py examples/
+
+      - name: Guard reconciliation is reproducible from retained manifests
+        working-directory: guard-prototype
+        run: python verify_reconciliation.py
+
+      # ---- negative checks: these must FAIL ----
+      # The point of this suite is that tamper detection fires. A step that
+      # succeeds here means the guarantee is broken, so each check is inverted.
+
+      - name: Malformed records must fail schema validation
+        run: |
+          if python verify.py test-invalid/; then
+            echo "::error::test-invalid/ passed but MUST fail - schema validation is not rejecting malformed records"
+            exit 1
+          fi
+          echo "OK - malformed records rejected as required"
+
+      - name: Tampered records must fail integrity verification
+        run: |
+          if python verify.py test-integrity/; then
+            echo "::error::test-integrity/ passed but MUST fail - tamper detection is broken"
+            exit 1
+          fi
+          echo "OK - tampered records rejected as required"
+
+      - name: Unauthorized actions must fail cross-record verification
+        run: |
+          if python verify.py test-action-verification/; then
+            echo "::error::test-action-verification/ passed but MUST fail - action authorization is not enforced"
+            exit 1
+          fi
+          echo "OK - all three adversarial action scenarios rejected as required"
+
+      - name: An empty input must not report success
+        run: |
+          mkdir -p /tmp/ja-es-empty
+          if python verify.py /tmp/ja-es-empty; then
+            echo "::error::verification passed after reading nothing - the empty-input guard is broken"
+            exit 1
+          fi
+          echo "OK - empty input reports failure as required"
