@@ -1,0 +1,106 @@
+{
+  "schema_version": "JA-ES-0.6",
+  "record_id": "GJR-LEND-2026-0102-000007",
+  "record_type": "governance_judgment_record",
+  "envelope": {
+    "envelope_id": "ENV-CONSUMER-LENDING",
+    "envelope_version": "2.3",
+    "workflow": "Consumer Loan Origination",
+    "reliance_standard_id": "RS-AUTO-APPROVE",
+    "reliance_standard_version": "1.4"
+  },
+  "decision": {
+    "decision_type": "reliance_boundary_approval",
+    "decision_domain": "lending",
+    "risk_tier": "moderate",
+    "impact_categories": [
+      "financial",
+      "rights",
+      "compliance"
+    ]
+  },
+  "boundary_scope": {
+    "ai_system_ids": [
+      "CREDIT-SCORE-ENGINE-2"
+    ],
+    "decision_population": "Consumer instalment loan applications, requested amount at or below $10,000, composite risk score at or above 740, no adverse action indicators, applicant not in a protected-review category.",
+    "rule_set_id": "RULES-AUTO-APPROVE-BAND-A",
+    "rule_set_version": "1.4",
+    "auto_execution_conditions": "Approval may execute without contemporaneous human review where all Band A conditions are satisfied simultaneously at time of scoring. Any single condition unmet routes to human review. All declines escalate regardless of score.",
+    "permitted_automated_actions": [
+      "approve"
+    ],
+    "prohibited_automated_actions": [
+      "deny",
+      "modify_terms",
+      "change_pricing"
+    ],
+    "excluded_conditions": "All declines; any file with a fraud flag, thin-file indicator, prior adverse action within 24 months, or manual referral from underwriting.",
+    "estimated_annual_volume": 41000,
+    "review_cadence": "Quarterly, and immediately upon material model change or adverse outcome signal.",
+    "next_review_due": "2026-04-05",
+    "sampling_rate": 0.02
+  },
+  "governance_action": {
+    "boundary_disposition": "narrow",
+    "effective_from": "2026-01-05T00:00:00Z",
+    "supersedes_record_id": "GJR-LEND-2025-0401-000004",
+    "supersedes_record_hash": "da0de38fcbd50804a56ebe79e04304fad3e67a48b7c695520cff4979064d122e",
+    "approving_body": "AI Governance Committee",
+    "dissent_recorded": "None recorded.",
+    "retroactive_authorization": false,
+    "transition_policy": {
+      "cutover_method": "scheduled",
+      "in_flight_treatment": "re_evaluate_under_new_boundary",
+      "score_validity_window_hours": 72
+    },
+    "reasoning": {
+      "tier_a": [
+        "prior_boundary_performance",
+        "historical_outcome_review",
+        "within_stated_risk_appetite",
+        "reversibility_of_decision"
+      ],
+      "tier_b": [
+        {
+          "code": "BAND-A-RAISE-FLOOR",
+          "label": "Auto-approval score floor raised following cohort performance review",
+          "library_version": "2.3"
+        }
+      ],
+      "narrative": "Prior boundary (v1.3) set the auto-approval floor at 720. Twelve-month cohort review of 38,412 auto-approved originations shows 90+ day delinquency of 1.9% in the 720-739 band versus 0.7% at 740+. Raising the floor to 740 moves roughly 6,800 applications per year into human review, which capacity modelling confirms underwriting can absorb at current headcount. Decisions remain reversible prior to funding. Declines continue to escalate without exception. Boundary narrowed rather than withdrawn because performance at 740+ remains within stated appetite. Effective date set three days after approval to allow rule-set deployment; in-flight applications scored under v1.3 re-evaluate under v1.4, with a 72-hour score validity window to prevent pre-narrowing batch scoring being executed under superseded authority.",
+      "standard_applied": "Credit Policy 4.0 — Automated Decisioning Authority; Enterprise Risk Appetite Statement §3.2",
+      "evidence_relied_upon": [
+        "Cohort Performance Review 2025-Q4 (Credit Risk Analytics, 2025-12-08)",
+        "Model Validation Report CSE-2 v4.2.1 (Model Risk Management, 2025-11-19)",
+        "Underwriting Capacity Assessment 2026 (Operations, 2025-12-15)"
+      ]
+    }
+  },
+  "ownership": {
+    "owner_type": "governance_authority",
+    "owner_id": "EMP-30055",
+    "role_at_decision": "VP Consumer Credit — Accountable Owner, ENV-CONSUMER-LENDING",
+    "override_authority": true
+  },
+  "timing": {
+    "decision_at": "2026-01-02T15:40:00Z",
+    "recorded_at": "2026-01-02T15:52:00Z",
+    "permitted_window_minutes": 1440,
+    "contemporaneous": true,
+    "reconstructed": false
+  },
+  "integrity": {
+    "chain_id": "ENV-CONSUMER-LENDING/governance",
+    "sequence": 2,
+    "hash_algorithm": "SHA-256",
+    "canonicalization": "RFC8785",
+    "chain_genesis": false,
+    "prev_record_hash": "da0de38fcbd50804a56ebe79e04304fad3e67a48b7c695520cff4979064d122e",
+    "record_hash": "2a10a01ef175fee8e2576691fb0e80f10a781daa21cbc1d7a56b1e3c2702cc6d"
+  },
+  "retention": {
+    "retain_until": "2036-01-02",
+    "retention_basis": "Governance record retained for life of boundary plus 10 years"
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "schema_version": "JA-ES-0.6",
+  "record_id": "AEL-LEND-2026-0716-004413",
+  "record_type": "auto_execution_log",
+  "envelope": {
+    "envelope_id": "ENV-CONSUMER-LENDING",
+    "envelope_version": "2.3",
+    "workflow": "Consumer Loan Origination — Auto-Approval Band",
+    "reliance_standard_id": "RS-AUTO-APPROVE",
+    "reliance_standard_version": "1.4",
+    "trigger": {
+      "escalated": false,
+      "trigger_rule_id": "TR-AUTO-BAND-A",
+      "trigger_basis": "below_threshold_auto"
+    }
+  },
+  "decision": {
+    "decision_type": "credit_approval",
+    "decision_domain": "lending",
+    "risk_tier": "low",
+    "subject_ref": "APP-2026-884219",
+    "impact_categories": [
+      "financial"
+    ]
+  },
+  "ai_output": {
+    "system_id": "CREDIT-SCORE-ENGINE-2",
+    "vendor": "Internal",
+    "model_version": "4.2.1",
+    "output_type": "recommendation",
+    "output_summary": "Approve. Composite risk score 781, above auto-approval floor of 740. Requested amount $6,000 within Band A ceiling of $10,000.",
+    "output_value": 781,
+    "confidence_reported": 0.94,
+    "presented_to_human": false,
+    "recommended_action": "approve"
+  },
+  "authorizing_boundary": {
+    "governance_record_id": "GJR-LEND-2026-0102-000007",
+    "governance_record_hash": "f5d159426c48ff41445f7b08d9480ee3e0c904fefa2f5d9963fba32774857114",
+    "reliance_standard_id": "RS-AUTO-APPROVE",
+    "reliance_standard_version": "1.4",
+    "rule_set_id": "RULES-AUTO-APPROVE-BAND-A",
+    "rule_set_version": "1.4",
+    "scored_at": "2026-07-16T14:23:00Z",
+    "boundary_evaluated_at": "2026-07-16T14:23:01Z",
+    "executed_at": "2026-07-16T14:23:02Z",
+    "all_conditions_passed": true,
+    "condition_results": [
+      {
+        "rule_id": "AUTO-ACTION-PERMITTED",
+        "operator": "in",
+        "threshold": [
+          "approve"
+        ],
+        "observed_value": "approve",
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-SCORE-FLOOR",
+        "operator": ">=",
+        "threshold": 740,
+        "observed_value": 781,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-AMOUNT-CEILING",
+        "operator": "<=",
+        "threshold": 10000,
+        "observed_value": 6000,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-NO-FRAUD-FLAG",
+        "operator": "==",
+        "threshold": false,
+        "observed_value": false,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-NO-THIN-FILE",
+        "operator": "==",
+        "threshold": false,
+        "observed_value": false,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-NO-ADVERSE-24MO",
+        "operator": "==",
+        "threshold": false,
+        "observed_value": false,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-NOT-MANUAL-REFERRAL",
+        "operator": "==",
+        "threshold": false,
+        "observed_value": false,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-SCORE-FRESHNESS-HOURS",
+        "operator": "<=",
+        "threshold": 72,
+        "observed_value": 0,
+        "passed": true
+      }
+    ],
+    "notes": "Scored, evaluated and executed within two seconds under boundary v1.4, effective 2026-01-05."
+  },
+  "ownership": {
+    "owner_type": "workflow_decision_owner",
+    "owner_id": "EMP-30055",
+    "role_at_decision": "VP Consumer Credit — Decision Owner, ENV-CONSUMER-LENDING",
+    "override_authority": true
+  },
+  "timing": {
+    "decision_at": "2026-07-16T14:23:02Z",
+    "recorded_at": "2026-07-16T14:23:02Z",
+    "permitted_window_minutes": 0,
+    "contemporaneous": true,
+    "reconstructed": false
+  },
+  "guard_probe": {
+    "probe_type": "none"
+  },
+  "integrity": {
+    "chain_id": "ENV-CONSUMER-LENDING/decisions",
+    "sequence": 2,
+    "hash_algorithm": "SHA-256",
+    "canonicalization": "RFC8785",
+    "chain_genesis": false,
+    "record_hash": "a00ef5f9fc1b939d79db86fdf01eed1288ee06811d649f0af10f2bda080c0ad8"
+  },
+  "retention": {
+    "retain_until": "2033-07-16",
+    "retention_basis": "Institutional 7-year credit file policy"
+  },
+  "automated_execution": {
+    "executed_action": "approve",
+    "execution_summary": "Automated action executed under the referenced governance boundary."
+  }
+}

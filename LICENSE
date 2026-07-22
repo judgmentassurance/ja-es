@@ -1,0 +1,58 @@
+Copyright (c) 2026 Judgment Assurance Institute, LLC.
+
+CONTENT AND SCHEMA LICENSE
+
+The Judgment Assurance Evidence Schema (JA-ES), the accompanying specification, examples,
+and test records are licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0). You may copy, distribute, adapt, and build
+upon this material, including for commercial purposes, provided you give
+appropriate attribution.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+REQUIRED ATTRIBUTION
+
+Short form:
+  "Based on the Judgment Assurance Evidence Schema (JA-ES) v0.6 —
+   Judgment Assurance Institute, LLC (Kavalir, 2026). CC BY 4.0."
+
+Full form:
+  "Judgment Assurance Evidence Schema (JA-ES) v0.6, Justin Kavalir, Judgment Assurance
+   Institute, LLC. Licensed CC BY 4.0. Source: judgmentassurance.com."
+
+If you modify the schema, label it "Adapted from JA-ES v0.6" and briefly
+describe material changes.
+
+TRADEMARKS (NO TRADEMARK LICENSE IN CC BY)
+
+"Judgment Assurance," "JA," "JA-ES," and related marks are trademarks of
+Judgment Assurance Institute, LLC. CC BY 4.0 does not grant permission to use
+trademarks.
+
+Limited permission to refer to the marks is granted solely to (a) provide the
+required attribution, and (b) state that an implementation is "based on" or
+"compatible with" JA-ES, provided such use does not imply partnership,
+endorsement, or certification.
+
+CONFORMANCE CLAIMS
+
+Passing schema validation means a record is well-formed under JA-ES. It does
+not establish conformance with the Judgment Assurance Minimum Control Standard,
+which includes requirements no validator can test (see the specification,
+"What the schema enforces, and what it cannot").
+
+Do not represent validation results as "JA Certified," "Judgment Assurance
+Certified," or as endorsement by Judgment Assurance Institute, LLC. Use of
+these marks in connection with certification, assessment, or formal compliance
+claims requires separate written authorization.
+
+REFERENCE IMPLEMENTATION
+
+build_examples.py and verify.py are reference implementations provided to make
+the hashing and chaining rules unambiguous. They are illustrative, not supported
+software, and carry no warranty of fitness for production use.
+
+NO WARRANTY
+
+Provided as-is, without warranties of any kind. Not legal advice. Users are
+responsible for how they implement and interpret this material.

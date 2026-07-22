@@ -1,0 +1,97 @@
+{
+  "schema_version": "JA-ES-0.6",
+  "record_id": "JR-LEND-2026-0716-004412",
+  "record_type": "judgment_record",
+  "envelope": {
+    "envelope_id": "ENV-CONSUMER-LENDING",
+    "envelope_version": "2.3",
+    "workflow": "Consumer Loan Origination — Decline Review",
+    "reliance_standard_id": "RS-CREDIT-DECLINE",
+    "reliance_standard_version": "1.4",
+    "trigger": {
+      "escalated": true,
+      "trigger_rule_id": "TR-DECLINE-ALL",
+      "trigger_basis": "exception_rule"
+    }
+  },
+  "decision": {
+    "decision_type": "credit_decline_review",
+    "decision_domain": "lending",
+    "risk_tier": "high",
+    "subject_ref": "APP-2026-884213",
+    "impact_categories": [
+      "financial",
+      "rights",
+      "compliance"
+    ]
+  },
+  "ai_output": {
+    "system_id": "CREDIT-SCORE-ENGINE-2",
+    "vendor": "Internal",
+    "model_version": "4.2.1",
+    "output_type": "recommendation",
+    "recommended_action": "deny",
+    "output_summary": "Decline. Composite risk score 612, below origination floor of 640. Primary drivers: DTI 47%, two 30-day delinquencies in trailing 24 months.",
+    "output_value": 612,
+    "confidence_reported": 0.86,
+    "presented_to_human": true
+  },
+  "human_action": {
+    "ai_output_disposition": "reject",
+    "final_outcome": "Loan APPROVED at reduced line of $8,000, 24-month term. AI decline recommendation not followed.",
+    "reasoning": {
+      "tier_a": [
+        "contextual_factors_not_visible_to_system",
+        "contradictory_evidence"
+      ],
+      "tier_b": [
+        {
+          "code": "DTI-DOC-CORRECTION",
+          "label": "Verified income documentation materially changes DTI from application value",
+          "library_version": "2.3"
+        },
+        {
+          "code": "DELINQ-ISOLATED-CAUSE",
+          "label": "Delinquencies attributable to documented isolated event, not payment pattern",
+          "library_version": "2.3"
+        }
+      ],
+      "narrative": "Applicant submitted 2025 W-2 and two most recent pay stubs after initial pull; verified gross income is $71,400 vs. $58,000 stated at application, moving DTI to 38%. Both 30-day delinquencies fall in a single 3-month window in Q1 2025 coinciding with documented medical leave; 21 months of on-time payments since. Score floor not met on stale income data. Approving at reduced line rather than requested $15,000 given thin file.",
+      "standard_applied": "Credit Policy 4.2 — Manual Override on Verified Income Correction"
+    },
+    "confidence_self_reported": "high",
+    "time_on_decision_ms": 384000
+  },
+  "ownership": {
+    "owner_type": "individual_decision_maker",
+    "owner_id": "EMP-40219",
+    "role_at_decision": "Senior Credit Analyst II",
+    "override_authority": true
+  },
+  "timing": {
+    "decision_at": "2026-07-16T14:22:09Z",
+    "recorded_at": "2026-07-16T14:22:41Z",
+    "permitted_window_minutes": 60,
+    "contemporaneous": true,
+    "reconstructed": false
+  },
+  "guard_probe": {
+    "probe_type": "none"
+  },
+  "integrity": {
+    "chain_id": "ENV-CONSUMER-LENDING/decisions",
+    "sequence": 1,
+    "hash_algorithm": "SHA-256",
+    "canonicalization": "RFC8785",
+    "chain_genesis": true,
+    "record_hash": "8e2c833448cac824296326e982e19777d9276609969669e8f4c1fafbccdca722"
+  },
+  "retention": {
+    "retain_until": "2033-07-16",
+    "retention_basis": "ECOA/Reg B adverse action retention plus institutional 7-year credit file policy"
+  },
+  "automated_execution": {
+    "executed_action": "approve",
+    "execution_summary": "Improper automated execution on a human Judgment Record."
+  }
+}

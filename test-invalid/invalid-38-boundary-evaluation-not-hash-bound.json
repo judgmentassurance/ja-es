@@ -1,0 +1,158 @@
+{
+  "schema_version": "JA-ES-0.6",
+  "record_id": "JR-LEND-2026-0716-004415",
+  "record_type": "judgment_record",
+  "envelope": {
+    "envelope_id": "ENV-CONSUMER-LENDING",
+    "envelope_version": "2.3",
+    "workflow": "Consumer Loan Origination — Band A Boundary Referral",
+    "reliance_standard_id": "RS-AUTO-APPROVE",
+    "reliance_standard_version": "1.4",
+    "trigger": {
+      "escalated": true,
+      "trigger_rule_id": "AUTO-SCORE-FLOOR",
+      "trigger_basis": "threshold_breach"
+    }
+  },
+  "decision": {
+    "decision_type": "credit_approval_review",
+    "decision_domain": "lending",
+    "risk_tier": "moderate",
+    "subject_ref": "APP-2026-884231",
+    "impact_categories": [
+      "financial",
+      "rights"
+    ]
+  },
+  "ai_output": {
+    "system_id": "CREDIT-SCORE-ENGINE-2",
+    "vendor": "Internal",
+    "model_version": "4.2.1",
+    "output_type": "recommendation",
+    "output_summary": "Approve. Composite risk score 739, one point below the auto-approval floor of 740. Requested amount $7,500.",
+    "output_value": 739,
+    "confidence_reported": 0.91,
+    "presented_to_human": true,
+    "recommended_action": "approve"
+  },
+  "boundary_evaluation": {
+    "governance_record_id": "GJR-LEND-2026-0102-000007",
+    "rule_set_id": "RULES-AUTO-APPROVE-BAND-A",
+    "rule_set_version": "1.4",
+    "scored_at": "2026-07-16T15:02:10Z",
+    "evaluated_at": "2026-07-16T15:02:11Z",
+    "routed_to_human_at": "2026-07-16T15:02:11Z",
+    "all_conditions_passed": false,
+    "condition_results": [
+      {
+        "rule_id": "AUTO-ACTION-PERMITTED",
+        "operator": "in",
+        "threshold": [
+          "approve"
+        ],
+        "observed_value": "approve",
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-SCORE-FLOOR",
+        "operator": ">=",
+        "threshold": 740,
+        "observed_value": 739,
+        "passed": false
+      },
+      {
+        "rule_id": "AUTO-AMOUNT-CEILING",
+        "operator": "<=",
+        "threshold": 10000,
+        "observed_value": 7500,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-NO-FRAUD-FLAG",
+        "operator": "==",
+        "threshold": false,
+        "observed_value": false,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-NO-THIN-FILE",
+        "operator": "==",
+        "threshold": false,
+        "observed_value": false,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-NO-ADVERSE-24MO",
+        "operator": "==",
+        "threshold": false,
+        "observed_value": false,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-NOT-MANUAL-REFERRAL",
+        "operator": "==",
+        "threshold": false,
+        "observed_value": false,
+        "passed": true
+      },
+      {
+        "rule_id": "AUTO-SCORE-FRESHNESS-HOURS",
+        "operator": "<=",
+        "threshold": 72,
+        "observed_value": 0,
+        "passed": true
+      }
+    ],
+    "notes": "Failed the auto-approval floor by one point under boundary v1.4. Under v1.3 this application would have auto-executed."
+  },
+  "human_action": {
+    "ai_output_disposition": "accept",
+    "final_outcome": "Loan APPROVED at requested $7,500, 36-month term.",
+    "reasoning": {
+      "tier_a": [
+        "output_within_expected_range",
+        "consistent_with_policy"
+      ],
+      "tier_b": [
+        {
+          "code": "BAND-A-NEAR-MISS",
+          "label": "Score within 5 points of auto-approval floor, no other adverse factor",
+          "library_version": "2.3"
+        }
+      ],
+      "narrative": "Referred solely because the score fell one point below the 740 floor introduced by boundary v1.4. All other Band A conditions satisfied. File reviewed in full: income verified, DTI 31%, no derogatory tradelines, 6 years at current employer. No basis to depart from the model recommendation. Approving as recommended.",
+      "standard_applied": "Credit Policy 4.0 — Referral Review, Band A Near-Miss"
+    },
+    "confidence_self_reported": "high",
+    "time_on_decision_ms": 96000
+  },
+  "ownership": {
+    "owner_type": "individual_decision_maker",
+    "owner_id": "EMP-40221",
+    "role_at_decision": "Credit Analyst I",
+    "override_authority": true
+  },
+  "timing": {
+    "decision_at": "2026-07-16T15:14:00Z",
+    "recorded_at": "2026-07-16T15:14:22Z",
+    "permitted_window_minutes": 60,
+    "contemporaneous": true,
+    "reconstructed": false
+  },
+  "guard_probe": {
+    "probe_type": "none"
+  },
+  "integrity": {
+    "chain_id": "ENV-CONSUMER-LENDING/decisions",
+    "sequence": 2,
+    "hash_algorithm": "SHA-256",
+    "canonicalization": "RFC8785",
+    "chain_genesis": false,
+    "prev_record_hash": "78cbd8c99d027f05f78cc43eb6699a802dca537d61158da71ad49805f89f0d8c",
+    "record_hash": "a2ac6c0ad5397522ede5a2818d0893bd1f3a4cda5de425d7c1c4caea3f5363c1"
+  },
+  "retention": {
+    "retain_until": "2033-07-16",
+    "retention_basis": "Institutional 7-year credit file policy"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "spec": "JA-ES hash rule test vectors",
+  "version": "JA-ES-0.6",
+  "canonicalization": "RFC8785",
+  "hash_algorithm": "SHA-256",
+  "purpose": "Any implementation claiming JA-ES conformance should reproduce every sha256 below before it is trusted to seal or verify records. Cross-language agreement on canonicalization is the single assumption the entire integrity model rests on, and the one most likely to be silently wrong. The utf16-vs-codepoint-ordering and negative-zero vectors are deliberately discriminating: a plausible, working, BMP-only implementation passes everything else and fails these.",
+  "vectors": [
+    {
+      "name": "scalars-and-key-order",
+      "note": "Keys sort by UTF-16 code unit. Integers carry no decimal point.",
+      "input": {
+        "b": 2,
+        "a": 1,
+        "C": 3,
+        "_": 4
+      },
+      "canonical_form": "{\"C\":3,\"_\":4,\"a\":1,\"b\":2}",
+      "sha256": "267ff0bd91dcd58a2f3a0bcafdb4e67cf9deb24a0c6e7fa74131686548848f65"
+    },
+    {
+      "name": "utf16-vs-codepoint-ordering",
+      "note": "DISCRIMINATING. U+1D400 (supplementary, surrogate pair D835 DC00) sorts BEFORE U+FFFD under UTF-16 code-unit ordering, and AFTER it under code-point ordering. RFC 8785 requires UTF-16. An implementation sorting by code point produces a different canonical form and a different digest. Vectors confined to the BMP cannot detect this error.",
+      "input": {
+        "�": 1,
+        "𝐀": 2,
+        "": 3,
+        "a": 4
+      },
+      "canonical_form": "{\"a\":4,\"𝐀\":2,\"\":3,\"�\":1}",
+      "sha256": "df0a00c2fb550385d75cb6854da1de344b1574a33730a25536cf98f8ba6e1f21"
+    },
+    {
+      "name": "negative-zero",
+      "note": "Raw IEEE-754 negative zero. RFC 8785 serializes it as 0, not -0.",
+      "input": {
+        "neg_zero": -0.0,
+        "pos_zero": 0.0,
+        "neg_zero_in_array": [
+          -0.0
+        ]
+      },
+      "canonical_form": "{\"neg_zero\":0,\"neg_zero_in_array\":[0],\"pos_zero\":0}",
+      "sha256": "8711a895c91a3f864aa67cc4a70a15e218273bae302ed5d60b141724a2ab8287"
+    },
+    {
+      "name": "number-formatting",
+      "note": "ECMAScript Number::toString. Integers carry no decimal point; 1e21 is the threshold above which exponential form is used; 1e-7 is the threshold below which it is used.",
+      "input": {
+        "one": 1,
+        "one_point_five": 1.5,
+        "e21": 1e+21,
+        "just_below_e21": 1e+20,
+        "e_minus_7": 1e-07,
+        "just_above_e_minus_7": 1e-06,
+        "max_safe_int": 9007199254740991,
+        "neg": -1.5,
+        "tiny": 5e-324,
+        "large": 1.7976931348623157e+308
+      },
+      "canonical_form": "{\"e21\":1e+21,\"e_minus_7\":1e-7,\"just_above_e_minus_7\":0.000001,\"just_below_e21\":100000000000000000000,\"large\":1.7976931348623157e+308,\"max_safe_int\":9007199254740991,\"neg\":-1.5,\"one\":1,\"one_point_five\":1.5,\"tiny\":5e-324}",
+      "sha256": "4e4abc6c81a4f8cfda38c338860216318dcf7bec0f6fc8f36103cd43c089257a"
+    },
+    {
+      "name": "string-escaping-controls",
+      "note": "Control characters below U+0020 use \\u form except where a short escape exists. Non-ASCII printable characters are NOT escaped.",
+      "input": {
+        "s": "\u0000\u0001\u001f\b\f\n\r\t\"\\ é中😀"
+      },
+      "canonical_form": "{\"s\":\"\\u0000\\u0001\\u001f\\b\\f\\n\\r\\t\\\"\\\\ é中😀\"}",
+      "sha256": "3208a7db59ab9ac8bb5491bce79bc7274be6116881ad67563c3eeef3c88169f2"
+    },
+    {
+      "name": "string-escaping",
+      "note": "Only the mandatory escapes; no gratuitous \\u sequences for printable characters.",
+      "input": {
+        "s": "quote\" backslash\\ newline\n tab\t euro€"
+      },
+      "canonical_form": "{\"s\":\"quote\\\" backslash\\\\ newline\\n tab\\t euro€\"}",
+      "sha256": "fbcbc65c81486be01c488025fdcb0b33c39e0fc5ae51c4a33a57a48126af203b"
+    },
+    {
+      "name": "arrays-preserve-order",
+      "note": "Array order is data and must not be sorted.",
+      "input": {
+        "list": [
+          3,
+          1,
+          2
+        ],
+        "nested": [
+          {
+            "b": 1,
+            "a": 2
+          }
+        ]
+      },
+      "canonical_form": "{\"list\":[3,1,2],\"nested\":[{\"a\":2,\"b\":1}]}",
+      "sha256": "008211f135657c48b3b622ba8a5e6f0e5ab0fa0fb4b090b5d764d68a82c425e7"
+    },
+    {
+      "name": "empty-containers",
+      "note": "Empty object and array serialize without whitespace.",
+      "input": {
+        "o": {},
+        "a": [],
+        "n": null,
+        "t": true,
+        "f": false
+      },
+      "canonical_form": "{\"a\":[],\"f\":false,\"n\":null,\"o\":{},\"t\":true}",
+      "sha256": "d54540f64e29451bbaaa55d8bc3247297964620eabc523c71e2c1cc504565e2f"
+    },
+    {
+      "name": "ja-es-record-hash",
+      "note": "The JA-ES rule end to end: remove record_hash and signature from integrity, canonicalize, SHA-256. Expected digest equals the record's sealed integrity.record_hash.",
+      "input_file": "examples/example-1-governance-boundary-original.json",
+      "canonical_length_bytes": 3303,
+      "sha256": "da0de38fcbd50804a56ebe79e04304fad3e67a48b7c695520cff4979064d122e",
+      "must_equal_sealed_record_hash": "da0de38fcbd50804a56ebe79e04304fad3e67a48b7c695520cff4979064d122e"
+    }
+  ]
+}

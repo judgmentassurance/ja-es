@@ -1,0 +1,22 @@
+{
+  "schema_version": "JA-ES-LE-0.6",
+  "event_id": "LE-OUT-2027-0720-000991",
+  "event_type": "amendment",
+  "references_record_id": "JR-LEND-2026-0716-004412",
+  "references_record_hash": "fb87d07f92c273f9958996068cd6adf8c0e363e67d6f57f5c55b9d040d29b6ad",
+  "created_at": "2027-07-20T03:15:00Z",
+  "created_by": "SYS-GUARD-OUTCOME-LOADER",
+  "outcome_feedback": {
+    "outcome_observed_at": "2027-07-20T00:00:00Z",
+    "outcome_label": "no_default_12mo",
+    "outcome_source": "Servicing performance file, 12-month origination cohort",
+    "observation_window": "12 months from origination",
+    "judgment_assessed_correct": true,
+    "assessment_basis": "Loan performed; override of AI decline did not produce loss. Cohort-level override performance reviewed quarterly by second-line credit review."
+  },
+  "integrity": {
+    "hash_algorithm": "SHA-256",
+    "canonicalization": "RFC8785",
+    "record_hash": "e136920ae98a15eaf84c9987c7a1863b097c4f0cc042564940664d6b9b4090bf"
+  }
+}

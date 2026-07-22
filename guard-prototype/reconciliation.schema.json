@@ -1,0 +1,554 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://judgmentassurance.com/schema/ja-guard/v0.2-prototype/reconciliation.schema.json",
+  "title": "JA Guard \u2014 Population Reconciliation Record (PROTOTYPE v0.2)",
+  "description": "PROTOTYPE. NOT part of JA-ES and deliberately not a fourth JA-ES record type. JA-ES records evidence individual and governance judgments; this evidences that a control operated over a population. Conflating the two would let a set-level assurance claim masquerade as a decision record. Whether this belongs as a JA-ES linked event or in a separate Guard assurance schema should be decided after pilot experience, not before. Judgment Assurance (Kavalir, 2026). CC BY 4.0.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "reconciliation_id",
+    "envelope_id",
+    "period",
+    "rule_set",
+    "population",
+    "sets",
+    "exceptions",
+    "chain_anchors",
+    "disposition",
+    "ownership",
+    "integrity"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "JA-GUARD-REC-0.2-prototype"
+    },
+    "reconciliation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "envelope_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "period": {
+      "type": "object",
+      "required": [
+        "period_start",
+        "period_end",
+        "cutoff_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "period_start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "period_end": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cutoff_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The instant at which both the source population and the record set were frozen for comparison. Without a common cutoff, in-flight decisions produce spurious exceptions and can be used to explain away real ones."
+        }
+      }
+    },
+    "rule_set": {
+      "type": "object",
+      "required": [
+        "rule_set_id",
+        "boundary_versions"
+      ],
+      "additionalProperties": false,
+      "description": "A period may span more than one boundary version. A single rule_set_version cannot describe a mid-period transition, and reconciling a transition period against one version silently misclassifies every decision on the wrong side of the cutover.",
+      "properties": {
+        "rule_set_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "boundary_versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "rule_set_version",
+              "governance_record_id",
+              "governance_record_hash",
+              "effective_from"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "rule_set_version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "governance_record_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "governance_record_hash": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$",
+                "description": "Lowercase hex SHA-256."
+              },
+              "effective_from": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "effective_until": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Omitted for the version still in force at cutoff."
+              },
+              "decisions_under_this_version": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "population": {
+      "type": "object",
+      "description": "The independently sourced denominator. This must come from a system the evidence store does not control; a population derived from the records themselves reconciles trivially and proves nothing.",
+      "required": [
+        "source_system",
+        "source_independent_of_record_store",
+        "total_evaluated",
+        "attestation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source_system": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_independent_of_record_store": {
+          "type": "boolean",
+          "const": true,
+          "description": "Asserted, not provable by schema. An assessor tests it. If the answer is genuinely no, the reconciliation is decorative."
+        },
+        "extraction_method": {
+          "type": "string"
+        },
+        "total_evaluated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attestation": {
+          "type": "object",
+          "required": [
+            "attested_by",
+            "attested_role",
+            "attested_at"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "attested_by": {
+              "type": "string",
+              "minLength": 1
+            },
+            "attested_role": {
+              "type": "string",
+              "minLength": 1
+            },
+            "attested_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "method": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "sets": {
+      "type": "object",
+      "description": "Deterministic digests over decision identifiers, not counts. Counts balance just as neatly with duplicates, substitutions, or the wrong ten referrals. The reconciliation is the comparison of the evaluated digest against the recorded_population digest computed over the UNION of auto-executed and routed sets \u2014 separate per-set digests cannot be combined without recomputation.",
+      "required": [
+        "digest_method",
+        "evaluated",
+        "auto_executed",
+        "routed_to_human",
+        "recorded_population",
+        "partition_digest_matches"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "digest_method": {
+          "type": "string",
+          "const": "sha256-of-rfc8785-canonical-sorted-unique-id-array",
+          "description": "Deduplicate the decision identifiers, sort by UTF-16 code unit, form a JSON array, canonicalize per RFC 8785, SHA-256, lowercase hex. NOT a delimiter-joined string: joining with LF makes [\"a\",\"b\"] and [\"a\\nb\"] hash identically, so a single identifier containing a line break could impersonate two records. JSON escaping removes the collision."
+        },
+        "evaluated": {
+          "$ref": "#/$defs/setSummary"
+        },
+        "auto_executed": {
+          "$ref": "#/$defs/setSummary"
+        },
+        "routed_to_human": {
+          "$ref": "#/$defs/setSummary"
+        },
+        "partition_digest_matches": {
+          "type": "boolean",
+          "description": "Whether recorded_population.digest equals evaluated.digest. Required, not optional \u2014 a reconciliation that omits its own result is not a reconciliation. Asserted here; recomputed by the Guard verifier from the manifests."
+        },
+        "recorded_population": {
+          "type": "object",
+          "required": [
+            "count",
+            "digest"
+          ],
+          "additionalProperties": false,
+          "description": "Union of auto_executed and routed_to_human, deduplicated. Computed over the union, not derived from the two digests.",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$",
+              "description": "Lowercase hex SHA-256."
+            }
+          }
+        }
+      }
+    },
+    "exceptions": {
+      "type": "object",
+      "description": "Named categories, each with counts AND identifiers. A reconciliation reporting only counts cannot be investigated.",
+      "required": [
+        "missing",
+        "orphan",
+        "duplicate",
+        "misrouted"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "missing": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/exceptionSet"
+            }
+          ],
+          "description": "Evaluated in the source population, no corresponding record. The under-routing signal."
+        },
+        "orphan": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/exceptionSet"
+            }
+          ],
+          "description": "Record exists, decision not in the evaluated population. Fabrication, scope error, or a broken extraction."
+        },
+        "duplicate": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/exceptionSet"
+            }
+          ],
+          "description": "More than one record for the same decision identifier."
+        },
+        "misrouted": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/exceptionSet"
+            }
+          ],
+          "description": "Auto-executed despite a failing condition, or routed to a human despite all conditions passing. Detectable only by re-evaluating recorded condition results against the rule set."
+        }
+      }
+    },
+    "chain_anchors": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Chain head at cutoff for every chain in scope. Recording and INDEPENDENTLY RETAINING these is what makes later truncation detectable: removing tail records leaves no sequence gap, but cannot reproduce a previously lodged head. An anchor held only by the record custodian closes nothing.",
+      "items": {
+        "type": "object",
+        "required": [
+          "chain_id",
+          "head_sequence",
+          "head_record_hash",
+          "externally_anchored"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "chain_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "head_sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "head_record_hash": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "Lowercase hex SHA-256."
+          },
+          "externally_anchored": {
+            "type": "boolean"
+          },
+          "anchor": {
+            "type": "object",
+            "required": [
+              "anchored_at",
+              "external_system",
+              "receipt_id",
+              "retained_by"
+            ],
+            "additionalProperties": false,
+            "description": "Evidence the head was lodged where the record custodian cannot rewrite it. Free text asserting external anchoring proves nothing; a receipt identifier and an independently retrievable digest can be checked by a third party.",
+            "properties": {
+              "anchored_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "external_system": {
+                "type": "string",
+                "minLength": 1
+              },
+              "receipt_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "retained_by": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Party holding the anchor, who must not be the record custodian."
+              },
+              "custodian_can_modify": {
+                "type": "boolean",
+                "description": "If true, the anchor does not close the regeneration gap."
+              },
+              "independently_retrievable_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$",
+                "description": "Lowercase hex SHA-256."
+              },
+              "signature": {
+                "type": "string"
+              },
+              "signature_algorithm": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "externally_anchored": {
+                  "const": true
+                }
+              },
+              "required": [
+                "externally_anchored"
+              ]
+            },
+            "then": {
+              "required": [
+                "anchor"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "disposition": {
+      "type": "object",
+      "required": [
+        "reviewer_conclusion",
+        "reviewed_by",
+        "reviewed_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "reviewer_conclusion": {
+          "type": "string",
+          "enum": [
+            "reconciled_no_exceptions",
+            "reconciled_with_explained_exceptions",
+            "not_reconciled_remediation_required"
+          ]
+        },
+        "reviewed_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewer_role": {
+          "type": "string"
+        },
+        "reviewer_independent_of_production": {
+          "type": "boolean"
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "findings": {
+          "type": "string"
+        },
+        "corrective_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "escalated_to": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reviewer_conclusion": {
+                "enum": [
+                  "reconciled_with_explained_exceptions",
+                  "not_reconciled_remediation_required"
+                ]
+              }
+            },
+            "required": [
+              "reviewer_conclusion"
+            ]
+          },
+          "then": {
+            "required": [
+              "findings",
+              "corrective_actions"
+            ]
+          }
+        }
+      ]
+    },
+    "ownership": {
+      "type": "object",
+      "required": [
+        "owner_id",
+        "owner_role"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner_role": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "required": [
+        "record_hash",
+        "hash_algorithm",
+        "canonicalization"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "record_hash": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hash_algorithm": {
+          "type": "string",
+          "enum": [
+            "SHA-256",
+            "SHA-384",
+            "SHA-512"
+          ]
+        },
+        "canonicalization": {
+          "type": "string",
+          "const": "RFC8785"
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "setSummary": {
+      "type": "object",
+      "required": [
+        "count",
+        "digest"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "Lowercase hex SHA-256."
+        },
+        "manifest": {
+          "type": "object",
+          "required": [
+            "location",
+            "manifest_digest"
+          ],
+          "additionalProperties": false,
+          "description": "Where the identifier list is retained. Without a retrievable manifest the digest is unfalsifiable: nobody can recompute it.",
+          "properties": {
+            "location": {
+              "type": "string",
+              "minLength": 1
+            },
+            "manifest_digest": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$",
+              "description": "Lowercase hex SHA-256."
+            },
+            "retained_by": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "exceptionSet": {
+      "type": "object",
+      "required": [
+        "count",
+        "identifiers"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "identifiers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Pseudonymous decision references. Truncation for volume is permitted only if identifiers_truncated is set and the full list is retrievable."
+        },
+        "identifiers_truncated": {
+          "type": "boolean"
+        },
+        "full_list_location": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

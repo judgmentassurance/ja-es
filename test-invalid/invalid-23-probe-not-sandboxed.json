@@ -1,0 +1,94 @@
+{
+  "schema_version": "JA-ES-0.6",
+  "record_id": "JR-HR-2026-0611-000318",
+  "record_type": "judgment_record",
+  "envelope": {
+    "envelope_id": "ENV-CONDUCT-ALERTS",
+    "envelope_version": "1.1",
+    "workflow": "AI-Flagged Employee Conduct Review",
+    "reliance_standard_id": "RS-CONDUCT-TRIAGE",
+    "reliance_standard_version": "1.0",
+    "trigger": {
+      "escalated": true,
+      "trigger_rule_id": "TR-HOSTILE-LANG-TIER2",
+      "trigger_basis": "risk_tier"
+    }
+  },
+  "decision": {
+    "decision_type": "conduct_alert_disposition",
+    "decision_domain": "employment",
+    "risk_tier": "high",
+    "subject_ref": "SEEDCASE-CN-2026-0311",
+    "impact_categories": [
+      "employment",
+      "rights",
+      "reputational"
+    ]
+  },
+  "ai_output": {
+    "system_id": "COMMS-PATTERN-MONITOR",
+    "vendor": "ThirdParty Analytics Inc.",
+    "model_version": "7.0",
+    "output_type": "flag",
+    "output_summary": "Three emails and two chat threads flagged as consistent with hostile work environment indicators. Severity: Tier 2.",
+    "output_value": "tier_2_hostile_indicators",
+    "confidence_reported": 0.71,
+    "presented_to_human": true,
+    "recommended_action": "escalate_for_review"
+  },
+  "human_action": {
+    "ai_output_disposition": "reject",
+    "final_outcome": "Closed without action. No policy violation found. AI flag not sustained.",
+    "reasoning": {
+      "tier_a": [
+        "contextual_factors_not_visible_to_system",
+        "output_implausible"
+      ],
+      "tier_b": [
+        {
+          "code": "CONTEXT-PERF-MGMT",
+          "label": "Flagged language occurs within documented performance-management process",
+          "library_version": "1.1"
+        }
+      ],
+      "narrative": "Reviewed all five flagged items in full thread context. Language is confrontational but directly tied to a documented performance improvement plan issued 2026-05-02 and mirrors standard PIP terminology. No personal, protected-class, or threatening content. No complainant; system-generated only. Closed without action pursuant to Policy 3.2.1.",
+      "standard_applied": "Employee Relations Policy 3.2.1 — Threshold for Formal Investigation"
+    },
+    "confidence_self_reported": "high",
+    "time_on_decision_ms": 1140000
+  },
+  "ownership": {
+    "owner_type": "individual_decision_maker",
+    "owner_id": "EMP-11784",
+    "role_at_decision": "Senior HR Business Partner",
+    "override_authority": true
+  },
+  "timing": {
+    "decision_at": "2026-06-11T10:05:00Z",
+    "recorded_at": "2026-06-11T10:24:00Z",
+    "permitted_window_minutes": 120,
+    "contemporaneous": true,
+    "reconstructed": false
+  },
+  "guard_probe": {
+    "probe_type": "seeded_case",
+    "probe_id": "SEED-CN-2026-Q2-014",
+    "expected_disposition": "reject",
+    "ground_truth_source": "independent_second_line",
+    "ground_truth_owner": "Employee Relations Quality Review Panel (independent of HRBP production line)",
+    "sandboxed": false,
+    "reviewer_blind_to_probe": true
+  },
+  "integrity": {
+    "chain_id": "ENV-CONDUCT-ALERTS/decisions",
+    "sequence": 1,
+    "hash_algorithm": "SHA-256",
+    "canonicalization": "RFC8785",
+    "chain_genesis": true,
+    "record_hash": "6630c21e3ccf4d1cab750d0238a0a9309fe7feab79bfa1de0053b5c65e019bf6"
+  },
+  "retention": {
+    "retain_until": "2030-06-11",
+    "retention_basis": "Employment records retention policy, 4 years post-disposition"
+  }
+}

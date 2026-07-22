@@ -1,0 +1,102 @@
+{
+  "schema_version": "JA-ES-0.6",
+  "record_id": "GJR-LEND-2025-0401-000004",
+  "record_type": "governance_judgment_record",
+  "envelope": {
+    "envelope_id": "ENV-CONSUMER-LENDING",
+    "envelope_version": "2.2",
+    "workflow": "Consumer Loan Origination",
+    "reliance_standard_id": "RS-AUTO-APPROVE",
+    "reliance_standard_version": "1.3"
+  },
+  "decision": {
+    "decision_type": "reliance_boundary_approval",
+    "decision_domain": "lending",
+    "risk_tier": "moderate",
+    "impact_categories": [
+      "financial",
+      "rights",
+      "compliance"
+    ]
+  },
+  "boundary_scope": {
+    "ai_system_ids": [
+      "CREDIT-SCORE-ENGINE-2"
+    ],
+    "decision_population": "Consumer instalment loan applications, requested amount at or below $10,000, composite risk score at or above 720, no adverse action indicators.",
+    "rule_set_id": "RULES-AUTO-APPROVE-BAND-A",
+    "rule_set_version": "1.3",
+    "auto_execution_conditions": "Approval may execute without contemporaneous human review where all Band A conditions are satisfied at time of scoring. Any unmet condition routes to human review. All declines escalate.",
+    "permitted_automated_actions": [
+      "approve"
+    ],
+    "prohibited_automated_actions": [
+      "deny",
+      "modify_terms",
+      "change_pricing"
+    ],
+    "excluded_conditions": "All declines; fraud flag; thin-file indicator; prior adverse action within 24 months; manual referral.",
+    "estimated_annual_volume": 47000,
+    "review_cadence": "Quarterly, and immediately upon material model change or adverse outcome signal.",
+    "next_review_due": "2025-07-01",
+    "sampling_rate": 0.02
+  },
+  "governance_action": {
+    "boundary_disposition": "approve",
+    "effective_from": "2025-04-07T00:00:00Z",
+    "approving_body": "AI Governance Committee",
+    "dissent_recorded": "None recorded.",
+    "retroactive_authorization": false,
+    "transition_policy": {
+      "cutover_method": "scheduled",
+      "in_flight_treatment": "re_evaluate_under_new_boundary",
+      "score_validity_window_hours": 72
+    },
+    "reasoning": {
+      "tier_a": [
+        "model_performance_evidence",
+        "within_stated_risk_appetite",
+        "reversibility_of_decision",
+        "volume_or_capacity_justification"
+      ],
+      "tier_b": [
+        {
+          "code": "BAND-A-ESTABLISH",
+          "label": "Initial establishment of Band A auto-approval",
+          "library_version": "2.2"
+        }
+      ],
+      "narrative": "Establishes automated approval for Band A. Model validation for CSE-2 v4.1 shows stable rank-ordering across the 700+ range on a 24-month backtest. Score floor set at 720 with a $10,000 ceiling. Declines are excluded entirely from automation given adverse-action obligations. Decisions remain reversible prior to funding. Quarterly review required; boundary to be revisited on first full cohort performance data.",
+      "standard_applied": "Credit Policy 4.0 \u2014 Automated Decisioning Authority",
+      "evidence_relied_upon": [
+        "Model Validation Report CSE-2 v4.1 (Model Risk Management, 2025-03-12)",
+        "Backtest Analysis 2023-2025 (Credit Risk Analytics, 2025-03-20)"
+      ]
+    }
+  },
+  "ownership": {
+    "owner_type": "governance_authority",
+    "owner_id": "EMP-30055",
+    "role_at_decision": "VP Consumer Credit \u2014 Accountable Owner, ENV-CONSUMER-LENDING",
+    "override_authority": true
+  },
+  "timing": {
+    "decision_at": "2025-04-01T14:10:00Z",
+    "recorded_at": "2025-04-01T14:35:00Z",
+    "permitted_window_minutes": 1440,
+    "contemporaneous": true,
+    "reconstructed": false
+  },
+  "integrity": {
+    "chain_id": "ENV-CONSUMER-LENDING/governance",
+    "sequence": 1,
+    "hash_algorithm": "SHA-256",
+    "canonicalization": "RFC8785",
+    "chain_genesis": true,
+    "record_hash": "da0de38fcbd50804a56ebe79e04304fad3e67a48b7c695520cff4979064d122e"
+  },
+  "retention": {
+    "retain_until": "2035-04-01",
+    "retention_basis": "Governance record retained for life of boundary plus 10 years"
+  }
+}

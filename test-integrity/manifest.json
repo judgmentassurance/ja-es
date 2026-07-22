@@ -1,0 +1,30 @@
+[
+  {
+    "file": "integrity-01-reasoning-altered-after-sealing.json",
+    "must_fail_because": "narrative rewritten after sealing; record_hash no longer matches"
+  },
+  {
+    "file": "integrity-02-attribution-swapped.json",
+    "must_fail_because": "owner changed after sealing; hash mismatch"
+  },
+  {
+    "file": "integrity-03-authority-repointed.json",
+    "must_fail_because": "auto-execution repointed at a boundary that is not the sealed one"
+  },
+  {
+    "file": "integrity-04-lineage-repointed.json",
+    "must_fail_because": "boundary lineage repointed at a substituted predecessor"
+  },
+  {
+    "file": "integrity-05-sequence-gap-deletion.json",
+    "must_fail_because": "sequence gap indicates a deleted record"
+  },
+  {
+    "file": "integrity-06-chain-link-broken.json",
+    "must_fail_because": "prev_record_hash does not match the prior record"
+  },
+  {
+    "file": "integrity-07-failed-condition-value-edited.json",
+    "must_fail_because": "observed value edited to make a routed decision look like a near-pass; hash mismatch"
+  }
+]

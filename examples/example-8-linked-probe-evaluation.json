@@ -1,0 +1,23 @@
+{
+  "schema_version": "JA-ES-LE-0.6",
+  "event_id": "LE-PRB-2026-0630-000042",
+  "event_type": "probe_evaluation",
+  "references_record_id": "JR-HR-2026-0611-000318",
+  "references_record_hash": "383a07da23a853fa9b3a0a6587d552d462d9e827848cc93a9b404904cc950598",
+  "created_at": "2026-06-30T16:00:00Z",
+  "created_by": "EMP-22910",
+  "probe_evaluation": {
+    "probe_id": "SEED-CN-2026-Q2-014",
+    "expected_disposition": "reject",
+    "actual_disposition": "reject",
+    "reviewer_passed": true,
+    "evaluator": "Employee Relations Quality Review Panel",
+    "evaluator_independent_of_production": true,
+    "notes": "Reviewer identified the performance-management context and rejected the flag as designed. Time on decision (19 min) consistent with substantive review."
+  },
+  "integrity": {
+    "hash_algorithm": "SHA-256",
+    "canonicalization": "RFC8785",
+    "record_hash": "cf3b5533eaab5312f1f3a64711d4950bebc8197b1c8c3f0821a8b629658f13ed"
+  }
+}

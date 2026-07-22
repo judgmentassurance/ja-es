@@ -1,0 +1,150 @@
+{
+  "schema_version": "JA-GUARD-REC-0.2-prototype",
+  "reconciliation_id": "REC-LEND-2026Q2-001",
+  "envelope_id": "ENV-CONSUMER-LENDING",
+  "period": {
+    "period_start": "2026-04-01T00:00:00Z",
+    "period_end": "2026-06-30T23:59:59Z",
+    "cutoff_at": "2026-07-01T00:00:00Z"
+  },
+  "rule_set": {
+    "rule_set_id": "RULES-AUTO-APPROVE-BAND-A",
+    "boundary_versions": [
+      {
+        "rule_set_version": "1.4",
+        "governance_record_id": "GJR-LEND-2026-0102-000007",
+        "governance_record_hash": "2a10a01ef175fee8e2576691fb0e80f10a781daa21cbc1d7a56b1e3c2702cc6d",
+        "effective_from": "2026-01-05T00:00:00Z",
+        "decisions_under_this_version": 3412
+      }
+    ]
+  },
+  "population": {
+    "source_system": "Loan Origination System (LOS) decision engine event log",
+    "source_independent_of_record_store": true,
+    "extraction_method": "Direct query against LOS event log by Internal Audit, credentials not held by the evidence store team.",
+    "total_evaluated": 3412,
+    "attestation": {
+      "attested_by": "EMP-51002",
+      "attested_role": "Director, Internal Audit",
+      "attested_at": "2026-07-02T11:00:00Z",
+      "method": "Extraction performed and hashed by Internal Audit; evidence-store team had no write access to the extract."
+    }
+  },
+  "sets": {
+    "digest_method": "sha256-of-rfc8785-canonical-sorted-unique-id-array",
+    "evaluated": {
+      "count": 3412,
+      "digest": "ff79d9cf53e1682d93be8b8119875a6a87831d26c9cdb4f62e75a270d02da0a7",
+      "manifest": {
+        "location": "guard-prototype/manifests/evaluated.json",
+        "manifest_digest": "9cfd1070d132c7e5990c496cea36b2b30aa575a40162972d63c999a5811ab85b",
+        "retained_by": "Internal Audit"
+      }
+    },
+    "auto_executed": {
+      "count": 3050,
+      "digest": "a7d31ef445550d7abd0617d355b2cf8a1790fda2ef4ec7515b581830edf60407",
+      "manifest": {
+        "location": "guard-prototype/manifests/auto_executed.json",
+        "manifest_digest": "0c9334e1e3f257c926c5862fad19cb614823dae284ba595d7504e0af94198f37",
+        "retained_by": "Internal Audit"
+      }
+    },
+    "routed_to_human": {
+      "count": 362,
+      "digest": "bded88773beb997cab0c9de4cdcd926d7845f4aea0ba0b308f0e9b0ba6589304",
+      "manifest": {
+        "location": "guard-prototype/manifests/routed_to_human.json",
+        "manifest_digest": "5a7d1b82ed1bc95d6ed6aed27af68ffb39b5d740f2e8d2cf561c8c7e11eb5f17",
+        "retained_by": "Internal Audit"
+      }
+    },
+    "recorded_population": {
+      "count": 3412,
+      "digest": "c5487a2c6631e653ebe73649bb918b866fc89a673fed26f08103b187c48bc789"
+    },
+    "partition_digest_matches": false
+  },
+  "exceptions": {
+    "missing": {
+      "count": 3,
+      "identifiers": [
+        "APP-2026-881204",
+        "APP-2026-882077",
+        "APP-2026-882901"
+      ]
+    },
+    "orphan": {
+      "count": 3,
+      "identifiers": [
+        "APP-2025-774001",
+        "APP-2025-774002",
+        "APP-2025-774003"
+      ]
+    },
+    "duplicate": {
+      "count": 0,
+      "identifiers": []
+    },
+    "misrouted": {
+      "count": 0,
+      "identifiers": []
+    }
+  },
+  "chain_anchors": [
+    {
+      "chain_id": "ENV-CONSUMER-LENDING/decisions",
+      "head_sequence": 3412,
+      "head_record_hash": "2fc4223a47e58a2889072e0b4e1f24711a584e5ffabfac35cfbea4266115486f",
+      "externally_anchored": true,
+      "anchor": {
+        "anchored_at": "2026-07-01T02:00:00Z",
+        "external_system": "Internal Audit WORM archive (Object Lock, compliance mode)",
+        "receipt_id": "IA-WORM-2026-Q2-004417",
+        "retained_by": "Internal Audit",
+        "custodian_can_modify": false,
+        "independently_retrievable_digest": "2fc4223a47e58a2889072e0b4e1f24711a584e5ffabfac35cfbea4266115486f"
+      }
+    },
+    {
+      "chain_id": "ENV-CONSUMER-LENDING/governance",
+      "head_sequence": 2,
+      "head_record_hash": "2a10a01ef175fee8e2576691fb0e80f10a781daa21cbc1d7a56b1e3c2702cc6d",
+      "externally_anchored": true,
+      "anchor": {
+        "anchored_at": "2026-07-01T02:00:00Z",
+        "external_system": "Internal Audit WORM archive (Object Lock, compliance mode)",
+        "receipt_id": "IA-WORM-2026-Q2-004418",
+        "retained_by": "Internal Audit",
+        "custodian_can_modify": false,
+        "independently_retrievable_digest": "2a10a01ef175fee8e2576691fb0e80f10a781daa21cbc1d7a56b1e3c2702cc6d"
+      }
+    }
+  ],
+  "disposition": {
+    "reviewer_conclusion": "not_reconciled_remediation_required",
+    "reviewed_by": "EMP-51002",
+    "reviewer_role": "Director, Internal Audit",
+    "reviewer_independent_of_production": true,
+    "reviewed_at": "2026-07-08T16:30:00Z",
+    "findings": "Record count for the period matches the evaluated population exactly (3,412 evaluated; 3,412 recorded, being 3,050 auto-executed plus 362 routed). Arithmetic reconciliation would have passed. The recorded-population digest did not match the evaluated digest. Comparing manifests identified three decisions evaluated by the LOS between 2026-05-14 and 2026-05-16 with no Evidence Record of any kind, and three records carrying prior-period identifiers re-ingested during a backfill with an incorrect date range. The two errors were equal in number and cancelled in the totals. Root cause: an evidence-store outage during which the LOS continued to evaluate and execute, followed by a corrective backfill that pulled the wrong window. All three missing decisions auto-executed within Band A and none would have required human review; the exposure is evidentiary rather than a routing failure. The organization cannot show, from records alone, why those three proceeded without human review.",
+    "corrective_actions": [
+      "Create reconstructed Evidence Records for the three missing decisions, flagged reconstructed with a stated basis under Assessment Guide 4, and not treated as equivalent to contemporaneous evidence.",
+      "Retain the three re-ingested prior-period records in place and issue linked amendment events marking them out-of-period and superseded. Evidence is not deleted; it is corrected in the open.",
+      "Implement fail-closed behaviour: the LOS halts auto-execution when the evidence store is unavailable.",
+      "Move reconciliation from quarterly to monthly until two consecutive periods reconcile on digest.",
+      "Add evidence-store availability to the Envelope's drift indicators and report monthly to the AI Governance Committee."
+    ],
+    "escalated_to": "AI Governance Committee"
+  },
+  "ownership": {
+    "owner_id": "EMP-30055",
+    "owner_role": "VP Consumer Credit \u2014 Accountable Owner, ENV-CONSUMER-LENDING"
+  },
+  "integrity": {
+    "hash_algorithm": "SHA-256",
+    "canonicalization": "RFC8785",
+    "record_hash": "77cf0163549f41938420c5176b0be26a33ebe8cd4d7eae4f2939f1dd0f9edb89"
+  }
+}

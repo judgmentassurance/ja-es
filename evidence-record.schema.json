@@ -1,0 +1,1350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://judgmentassurance.com/schema/ja-es/v0.6/evidence-record.schema.json",
+  "title": "Judgment Assurance Evidence Schema (JA-ES) v0.6 \u2014 Evidence Record",
+  "description": "Open specification for decision evidence under the Judgment Assurance framework. Three record types: (1) judgment_record \u2014 the evidentiary output of an Atomic Unit at the point of an individual decision; (2) governance_judgment_record \u2014 the evidentiary output of an Atomic Unit at the Governance layer, establishing a reliance boundary under which decisions may proceed without contemporaneous human review; (3) auto_execution_log \u2014 a decision resolved inside such a boundary, linked by id and hash to the governance judgment that authorized it and explicitly recording the action actually executed. Judgment records arising from a failed boundary evaluation carry boundary_evaluation, the inverse of authorizing_boundary, so that routing is evidenced in both directions. Post-decision information is carried separately; see linked-event.schema.json. Judgment Assurance (Kavalir, 2026). CC BY 4.0.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_id",
+    "record_type",
+    "envelope",
+    "decision",
+    "ownership",
+    "timing",
+    "integrity"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "JA-ES-0.6"
+    },
+    "record_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "record_type": {
+      "type": "string",
+      "enum": [
+        "judgment_record",
+        "governance_judgment_record",
+        "auto_execution_log"
+      ]
+    },
+    "envelope": {
+      "type": "object",
+      "required": [
+        "envelope_id",
+        "envelope_version"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "envelope_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "envelope_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workflow": {
+          "type": "string"
+        },
+        "reliance_standard_id": {
+          "type": "string"
+        },
+        "reliance_standard_version": {
+          "type": "string"
+        },
+        "trigger": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "escalated": {
+              "type": "boolean"
+            },
+            "trigger_rule_id": {
+              "type": "string"
+            },
+            "trigger_basis": {
+              "type": "string",
+              "enum": [
+                "threshold_breach",
+                "confidence_band",
+                "exception_rule",
+                "risk_tier",
+                "sampling",
+                "manual_referral",
+                "below_threshold_auto"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "description": "DEFINE. For governance_judgment_record, describes the boundary decision itself rather than an individual case.",
+      "required": [
+        "decision_type",
+        "risk_tier"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "decision_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision_domain": {
+          "type": "string"
+        },
+        "risk_tier": {
+          "type": "string",
+          "enum": [
+            "low",
+            "moderate",
+            "high",
+            "critical"
+          ]
+        },
+        "subject_ref": {
+          "type": "string",
+          "description": "Pseudonymous case reference. MUST NOT contain direct personal identifiers. Omitted on governance records, which concern populations rather than subjects."
+        },
+        "impact_categories": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "rights",
+              "financial",
+              "health",
+              "safety",
+              "compliance",
+              "reputational",
+              "employment"
+            ]
+          }
+        }
+      }
+    },
+    "ai_output": {
+      "type": "object",
+      "description": "The AI output for this specific decision. Present on judgment_record and auto_execution_log; absent on governance_judgment_record, which concerns a population, not an output.",
+      "required": [
+        "system_id",
+        "output_summary",
+        "presented_to_human"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "system_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "vendor": {
+          "type": "string"
+        },
+        "model_version": {
+          "type": "string"
+        },
+        "output_type": {
+          "type": "string",
+          "enum": [
+            "recommendation",
+            "score",
+            "classification",
+            "flag",
+            "ranking",
+            "generated_content",
+            "other"
+          ]
+        },
+        "output_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommended_action": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Structured action proposed by the AI or rules engine. Required for auto_execution_log so the recommendation can be compared with the action actually executed. Domain-defined but stable within the versioned rule set."
+        },
+        "output_value": {},
+        "confidence_reported": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "presented_to_human": {
+          "type": "boolean"
+        }
+      }
+    },
+    "human_action": {
+      "type": "object",
+      "description": "DECIDE + RECORD at the point of an individual decision. Required on judgment_record; prohibited on the other two types.",
+      "required": [
+        "ai_output_disposition",
+        "final_outcome",
+        "reasoning"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ai_output_disposition": {
+          "type": "string",
+          "enum": [
+            "accept",
+            "modify",
+            "reject",
+            "escalate",
+            "defer"
+          ],
+          "description": "Action taken ON THE AI OUTPUT, not the outcome for the subject. 'reject' of an AI decline may produce an approval. Read with final_outcome."
+        },
+        "final_outcome": {
+          "type": "string",
+          "minLength": 1
+        },
+        "modification_detail": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reasoning": {
+          "$ref": "#/$defs/caseReasoning"
+        },
+        "confidence_self_reported": {
+          "type": "string",
+          "enum": [
+            "low",
+            "moderate",
+            "high"
+          ]
+        },
+        "time_on_decision_ms": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "ai_output_disposition": {
+                "const": "modify"
+              }
+            },
+            "required": [
+              "ai_output_disposition"
+            ]
+          },
+          "then": {
+            "required": [
+              "modification_detail"
+            ]
+          }
+        }
+      ]
+    },
+    "boundary_scope": {
+      "type": "object",
+      "description": "Governance records only. What population of decisions this boundary covers and under what conditions they may auto-execute.",
+      "required": [
+        "ai_system_ids",
+        "decision_population",
+        "rule_set_id",
+        "rule_set_version",
+        "auto_execution_conditions",
+        "permitted_automated_actions",
+        "prohibited_automated_actions",
+        "review_cadence",
+        "next_review_due"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "ai_system_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "decision_population": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Which decisions fall inside this boundary."
+        },
+        "auto_execution_conditions": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The conditions under which a decision may proceed without contemporaneous human review."
+        },
+        "permitted_automated_actions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Structured actions this boundary authorizes the system to execute without contemporaneous human review. Eligibility conditions and action authorization are separate questions; both must be satisfied."
+        },
+        "prohibited_automated_actions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Structured actions that must not auto-execute under this boundary and therefore route to a human or another governed process."
+        },
+        "excluded_conditions": {
+          "type": "string",
+          "description": "Conditions that must always escalate regardless of score or band."
+        },
+        "estimated_annual_volume": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "review_cadence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "next_review_due": {
+          "type": "string",
+          "format": "date"
+        },
+        "sampling_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Proportion of auto-executed decisions subject to retrospective human sampling, if any."
+        },
+        "rule_set_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identifier of the machine-evaluable rule set implementing this boundary. Auto-execution logs report per-condition results against this rule set."
+        },
+        "rule_set_version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "governance_action": {
+      "type": "object",
+      "description": "Governance records only. The exercise of institutional judgment establishing, changing, or withdrawing a reliance boundary. This is an Atomic Unit at the Governance layer.",
+      "required": [
+        "boundary_disposition",
+        "effective_from",
+        "reasoning"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "boundary_disposition": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "modify",
+            "reaffirm",
+            "narrow",
+            "suspend",
+            "withdraw"
+          ],
+          "description": "Action taken on the reliance boundary."
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "supersedes_record_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Prior governance judgment record this replaces. Establishes the lineage of a boundary across versions."
+        },
+        "reasoning": {
+          "$ref": "#/$defs/governanceReasoning"
+        },
+        "approving_body": {
+          "type": "string",
+          "description": "Committee or body, where approval is collective. Does not substitute for named individual ownership."
+        },
+        "dissent_recorded": {
+          "type": "string",
+          "description": "Any recorded dissent. Absence is not evidence of unanimity."
+        },
+        "supersedes_record_hash": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hash of the superseded governance record as written. Binds lineage to an immutable predecessor; the same anti-substitution reasoning that applies to authorizing_boundary applies here."
+        },
+        "retroactive_authorization": {
+          "type": "boolean",
+          "default": false,
+          "description": "TRUE where effective_from precedes decision_at, i.e. the boundary purports to authorize decisions already executed. JSON Schema cannot compare two field values, so this is an assertion the issuer makes and an assessor tests. Requires justification."
+        },
+        "retroactivity_justification": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transition_policy": {
+          "type": "object",
+          "description": "How in-flight decisions are treated when this boundary takes effect. Absent an explicit policy, the default rule applies: the boundary in force when a decision becomes operative governs it. Scoring under an earlier boundary does not vest authority to execute under that boundary after it is superseded.",
+          "required": [
+            "cutover_method",
+            "in_flight_treatment"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "cutover_method": {
+              "type": "string",
+              "enum": [
+                "immediate",
+                "scheduled",
+                "phased"
+              ]
+            },
+            "in_flight_treatment": {
+              "type": "string",
+              "enum": [
+                "re_evaluate_under_new_boundary",
+                "escalate_to_human",
+                "grandfather_defined_population"
+              ],
+              "description": "re_evaluate is the default. grandfather requires an expressly defined population, deadline and rationale."
+            },
+            "score_validity_window_hours": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Maximum age of an AI score that may still be executed. Guards against batch-scoring immediately before a narrowing and executing afterwards under superseded authority."
+            },
+            "grandfathered_population": {
+              "type": "string",
+              "minLength": 1
+            },
+            "grandfather_deadline": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "grandfather_rationale": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "in_flight_treatment": {
+                    "const": "grandfather_defined_population"
+                  }
+                },
+                "required": [
+                  "in_flight_treatment"
+                ]
+              },
+              "then": {
+                "required": [
+                  "grandfathered_population",
+                  "grandfather_deadline",
+                  "grandfather_rationale"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "boundary_disposition": {
+                "enum": [
+                  "modify",
+                  "reaffirm",
+                  "narrow",
+                  "suspend",
+                  "withdraw"
+                ]
+              }
+            },
+            "required": [
+              "boundary_disposition"
+            ]
+          },
+          "then": {
+            "required": [
+              "supersedes_record_id",
+              "supersedes_record_hash"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "retroactive_authorization": {
+                "const": true
+              }
+            },
+            "required": [
+              "retroactive_authorization"
+            ]
+          },
+          "then": {
+            "required": [
+              "retroactivity_justification"
+            ]
+          }
+        }
+      ]
+    },
+    "authorizing_boundary": {
+      "type": "object",
+      "description": "Auto-execution records only. The evidentiary link to the governance judgment that authorized this decision to proceed without contemporaneous human review. This is what makes an auto-executed decision traceable to a named human who owned the choice to automate it.",
+      "required": [
+        "governance_record_id",
+        "governance_record_hash",
+        "reliance_standard_id",
+        "reliance_standard_version",
+        "rule_set_id",
+        "rule_set_version",
+        "condition_results",
+        "scored_at",
+        "boundary_evaluated_at",
+        "executed_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "governance_record_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "governance_record_hash": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hash of the governance judgment record as written. Binds this decision to a specific immutable boundary version and detects substitution."
+        },
+        "reliance_standard_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reliance_standard_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rule_set_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rule_set_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition_results": {
+          "$ref": "#/$defs/conditionResults"
+        },
+        "scored_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the AI output was produced."
+        },
+        "boundary_evaluated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When boundary conditions were evaluated for this decision."
+        },
+        "executed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the decision became operative. The boundary in force at this moment governs."
+        },
+        "all_conditions_passed": {
+          "type": "boolean",
+          "description": "Summary flag. MUST be true; a decision with any failed condition may not auto-execute."
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "automated_execution": {
+      "type": "object",
+      "description": "Auto-execution records only. What the system actually did, stated separately from what the AI recommended. A recommendation and an execution are different facts and must not be inferred from one another.",
+      "required": [
+        "executed_action",
+        "execution_summary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "executed_action": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Structured action actually made operative. The verifier confirms that it matches the recommendation and is included in the referenced governance boundary's permitted_automated_actions."
+        },
+        "execution_summary": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Plain-language description of the action actually executed, including material terms where applicable."
+        }
+      }
+    },
+    "ownership": {
+      "type": "object",
+      "required": [
+        "owner_type",
+        "owner_id",
+        "role_at_decision"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "owner_type": {
+          "type": "string",
+          "enum": [
+            "individual_decision_maker",
+            "governance_authority",
+            "workflow_decision_owner"
+          ],
+          "description": "individual_decision_maker for case-level human judgment. governance_authority for boundary approvals. workflow_decision_owner for auto-executed decisions."
+        },
+        "owner_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role_at_decision": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Role held at time of decision, not at time of query."
+        },
+        "override_authority": {
+          "type": "boolean"
+        },
+        "escalation_to": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "required": [
+        "decision_at",
+        "recorded_at",
+        "contemporaneous"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "decision_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "permitted_window_minutes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contemporaneous": {
+          "type": "boolean"
+        },
+        "reconstructed": {
+          "type": "boolean",
+          "default": false
+        },
+        "reconstruction_basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reconstructed": {
+                "const": true
+              }
+            },
+            "required": [
+              "reconstructed"
+            ]
+          },
+          "then": {
+            "required": [
+              "reconstruction_basis"
+            ],
+            "properties": {
+              "contemporaneous": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "guard_probe": {
+      "type": "object",
+      "required": [
+        "probe_type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "probe_type": {
+          "type": "string",
+          "enum": [
+            "none",
+            "seeded_case",
+            "blind_event"
+          ]
+        },
+        "probe_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expected_disposition": {
+          "type": "string",
+          "enum": [
+            "accept",
+            "modify",
+            "reject"
+          ]
+        },
+        "ground_truth_source": {
+          "type": "string",
+          "enum": [
+            "realized_outcome",
+            "independent_second_line",
+            "external_benchmark",
+            "internal_expert_panel"
+          ]
+        },
+        "ground_truth_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sandboxed": {
+          "type": "boolean",
+          "description": "Asserts the probe cannot produce a live outcome or contaminate a regulatory record. The schema enforces the assertion, not the fact."
+        },
+        "reviewer_blind_to_probe": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "probe_type": {
+                "enum": [
+                  "seeded_case",
+                  "blind_event"
+                ]
+              }
+            },
+            "required": [
+              "probe_type"
+            ]
+          },
+          "then": {
+            "required": [
+              "probe_id",
+              "ground_truth_source",
+              "ground_truth_owner",
+              "sandboxed"
+            ],
+            "properties": {
+              "sandboxed": {
+                "const": true
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "probe_type": {
+                "const": "seeded_case"
+              }
+            },
+            "required": [
+              "probe_type"
+            ]
+          },
+          "then": {
+            "required": [
+              "expected_disposition"
+            ]
+          }
+        }
+      ]
+    },
+    "integrity": {
+      "type": "object",
+      "description": "Hash input is the RFC 8785 canonical serialization of the entire record with 'record_hash' and 'signature' removed from the integrity object, so chain_id, sequence and prev_record_hash are themselves covered.",
+      "required": [
+        "record_hash",
+        "hash_algorithm",
+        "canonicalization",
+        "chain_id",
+        "sequence"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "record_hash": {
+          "type": "string",
+          "minLength": 1
+        },
+        "prev_record_hash": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Monotonic, gapless within the envelope chain. Gaps are the deletion signal."
+        },
+        "chain_genesis": {
+          "type": "boolean",
+          "default": false
+        },
+        "hash_algorithm": {
+          "type": "string",
+          "enum": [
+            "SHA-256",
+            "SHA-384",
+            "SHA-512"
+          ]
+        },
+        "canonicalization": {
+          "type": "string",
+          "const": "RFC8785"
+        },
+        "signature": {
+          "type": "string"
+        },
+        "chain_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identifies the append-only chain this record belongs to. Sequence is gapless within a chain_id, not across an Envelope. Governance records and operational decision records MUST occupy separate chains: their volumes differ by orders of magnitude and interleaving them would make gap detection meaningless. Convention: '<envelope_id>/governance' and '<envelope_id>/decisions'."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "anyOf": [
+              {
+                "properties": {
+                  "chain_genesis": {
+                    "const": false
+                  }
+                }
+              },
+              {
+                "not": {
+                  "required": [
+                    "chain_genesis"
+                  ]
+                }
+              }
+            ]
+          },
+          "then": {
+            "required": [
+              "prev_record_hash"
+            ]
+          }
+        }
+      ]
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "retain_until": {
+          "type": "string",
+          "format": "date"
+        },
+        "retention_basis": {
+          "type": "string"
+        }
+      }
+    },
+    "boundary_evaluation": {
+      "type": "object",
+      "description": "Judgment records only. Evidence that this decision was machine-evaluated against an automation boundary and FAILED, and was therefore routed to a human. The inverse of authorizing_boundary. Without this, an organization can prove that auto-executed decisions stayed inside the boundary but cannot prove that escalated decisions fell outside it \u2014 leaving under-routing undetectable and depriving Guard of per-condition escalation signal.",
+      "required": [
+        "governance_record_id",
+        "governance_record_hash",
+        "rule_set_id",
+        "rule_set_version",
+        "evaluated_at",
+        "condition_results",
+        "all_conditions_passed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "governance_record_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "governance_record_hash": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hash of the governance record whose boundary was evaluated. Bound by hash for the same anti-substitution reason as authorizing_boundary."
+        },
+        "rule_set_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rule_set_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scored_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evaluated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "routed_to_human_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "all_conditions_passed": {
+          "type": "boolean",
+          "const": false,
+          "description": "MUST be false. A decision satisfying every condition would have auto-executed and belongs in an auto_execution_log."
+        },
+        "condition_results": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/conditionResults"
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "passed": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "passed"
+                ]
+              },
+              "minContains": 1,
+              "description": "At least one condition must have failed, consistent with all_conditions_passed being false."
+            }
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "record_type": {
+            "const": "judgment_record"
+          }
+        },
+        "required": [
+          "record_type"
+        ]
+      },
+      "then": {
+        "required": [
+          "ai_output",
+          "human_action"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "boundary_scope"
+              ]
+            },
+            {
+              "required": [
+                "governance_action"
+              ]
+            },
+            {
+              "required": [
+                "authorizing_boundary"
+              ]
+            },
+            {
+              "required": [
+                "automated_execution"
+              ]
+            }
+          ]
+        },
+        "properties": {
+          "ownership": {
+            "properties": {
+              "owner_type": {
+                "const": "individual_decision_maker"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_type": {
+            "const": "governance_judgment_record"
+          }
+        },
+        "required": [
+          "record_type"
+        ]
+      },
+      "then": {
+        "required": [
+          "boundary_scope",
+          "governance_action"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "human_action"
+              ]
+            },
+            {
+              "required": [
+                "ai_output"
+              ]
+            },
+            {
+              "required": [
+                "authorizing_boundary"
+              ]
+            },
+            {
+              "required": [
+                "boundary_evaluation"
+              ]
+            },
+            {
+              "required": [
+                "automated_execution"
+              ]
+            }
+          ]
+        },
+        "properties": {
+          "ownership": {
+            "properties": {
+              "owner_type": {
+                "const": "governance_authority"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "record_type": {
+            "const": "auto_execution_log"
+          }
+        },
+        "required": [
+          "record_type"
+        ]
+      },
+      "then": {
+        "required": [
+          "ai_output",
+          "authorizing_boundary",
+          "automated_execution"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "human_action"
+              ]
+            },
+            {
+              "required": [
+                "boundary_scope"
+              ]
+            },
+            {
+              "required": [
+                "governance_action"
+              ]
+            },
+            {
+              "required": [
+                "boundary_evaluation"
+              ]
+            }
+          ]
+        },
+        "properties": {
+          "ownership": {
+            "properties": {
+              "owner_type": {
+                "const": "workflow_decision_owner"
+              }
+            }
+          },
+          "ai_output": {
+            "required": [
+              "recommended_action"
+            ],
+            "properties": {
+              "presented_to_human": {
+                "const": false
+              }
+            }
+          },
+          "envelope": {
+            "required": [
+              "trigger"
+            ],
+            "properties": {
+              "trigger": {
+                "required": [
+                  "escalated",
+                  "trigger_rule_id",
+                  "trigger_basis"
+                ],
+                "properties": {
+                  "escalated": {
+                    "const": false
+                  },
+                  "trigger_basis": {
+                    "enum": [
+                      "below_threshold_auto",
+                      "risk_tier",
+                      "confidence_band"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "authorizing_boundary": {
+            "properties": {
+              "all_conditions_passed": {
+                "const": true
+              },
+              "condition_results": {
+                "items": {
+                  "properties": {
+                    "passed": {
+                      "const": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "human_action": {
+            "properties": {
+              "ai_output_disposition": {
+                "const": "escalate"
+              }
+            },
+            "required": [
+              "ai_output_disposition"
+            ]
+          }
+        },
+        "required": [
+          "human_action"
+        ]
+      },
+      "then": {
+        "properties": {
+          "ownership": {
+            "required": [
+              "escalation_to"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "tierBCodes": {
+      "type": "array",
+      "description": "Domain-specific reasoning codes defined per Envelope. Version stamping is mandatory: without it, a shift in reasoning distribution cannot be distinguished from a changed code library.",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "library_version"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string"
+          },
+          "library_version": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "caseReasoning": {
+      "type": "object",
+      "description": "Structured reasoning for an individual decision. Free text alone is a prohibited condition (JA-MCS \u00a76).",
+      "required": [
+        "tier_a"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "tier_a": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "consistent_with_policy",
+              "contrary_to_policy",
+              "contextual_factors_not_visible_to_system",
+              "contradictory_evidence",
+              "insufficient_information",
+              "data_quality_concern",
+              "output_within_expected_range",
+              "output_implausible",
+              "risk_tolerance_exceeded",
+              "precedent_or_prior_treatment",
+              "regulatory_or_legal_constraint"
+            ]
+          }
+        },
+        "tier_b": {
+          "$ref": "#/$defs/tierBCodes"
+        },
+        "narrative": {
+          "type": "string",
+          "description": "Free text. Monitored by Guard; drives Tier A/B refinement. Does not cure absent tier_a."
+        },
+        "standard_applied": {
+          "type": "string"
+        }
+      }
+    },
+    "governanceReasoning": {
+      "type": "object",
+      "description": "Structured reasoning for a reliance boundary decision. Separate Tier A vocabulary because the question is different: not 'why this case' but 'why may this population proceed without a human'.",
+      "required": [
+        "tier_a"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "tier_a": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "model_performance_evidence",
+              "historical_outcome_review",
+              "prior_boundary_performance",
+              "pilot_or_sampling_evidence",
+              "within_stated_risk_appetite",
+              "consequence_severity_low",
+              "reversibility_of_decision",
+              "volume_or_capacity_justification",
+              "regulatory_or_legal_constraint",
+              "vendor_capability_limitation",
+              "escalation_capacity_constraint"
+            ]
+          }
+        },
+        "tier_b": {
+          "$ref": "#/$defs/tierBCodes"
+        },
+        "narrative": {
+          "type": "string"
+        },
+        "standard_applied": {
+          "type": "string"
+        },
+        "evidence_relied_upon": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "References to the analyses, validation reports, or outcome data supporting the boundary."
+        }
+      }
+    },
+    "conditionResults": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Per-condition evaluation of a decision against a versioned boundary rule set. Every condition in the rule set MUST be reported, including those that passed trivially: a partial report is indistinguishable from a suppressed failure.",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule_id",
+          "passed"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operator": {
+            "type": "string",
+            "enum": [
+              ">=",
+              "<=",
+              ">",
+              "<",
+              "==",
+              "!=",
+              "in",
+              "not_in",
+              "exists",
+              "not_exists"
+            ]
+          },
+          "threshold": {},
+          "observed_value": {},
+          "passed": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

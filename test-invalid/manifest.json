@@ -1,0 +1,178 @@
+[
+  {
+    "file": "invalid-01-empty-human-action.json",
+    "must_fail_because": "judgment_record with no disposition, outcome or reasoning"
+  },
+  {
+    "file": "invalid-02-freetext-reasoning-only.json",
+    "must_fail_because": "no tier_a; JA-MCS 6 prohibited condition"
+  },
+  {
+    "file": "invalid-03-auto-execution-unauthorized.json",
+    "must_fail_because": "auto-execution must link to authorizing governance judgment"
+  },
+  {
+    "file": "invalid-04-authority-not-hash-bound.json",
+    "must_fail_because": "authority link must bind by hash, not id alone"
+  },
+  {
+    "file": "invalid-05-auto-execution-no-condition-results.json",
+    "must_fail_because": "must prove this decision satisfied the boundary, not merely cite it"
+  },
+  {
+    "file": "invalid-06-auto-execution-failed-condition.json",
+    "must_fail_because": "a decision with any failed condition may not auto-execute"
+  },
+  {
+    "file": "invalid-07-auto-execution-no-trigger.json",
+    "must_fail_because": "auto-execution must record the routing rule that sent it there"
+  },
+  {
+    "file": "invalid-08-auto-execution-marked-escalated.json",
+    "must_fail_because": "auto-execution cannot be flagged escalated"
+  },
+  {
+    "file": "invalid-09-auto-execution-no-scored-at.json",
+    "must_fail_because": "cutover analysis requires scored/evaluated/executed times"
+  },
+  {
+    "file": "invalid-10-auto-execution-with-human-action.json",
+    "must_fail_because": "auto_execution_log carries no contemporaneous human action"
+  },
+  {
+    "file": "invalid-11-auto-execution-wrong-owner-type.json",
+    "must_fail_because": "auto-execution attributes to workflow_decision_owner"
+  },
+  {
+    "file": "invalid-12-governance-with-case-action.json",
+    "must_fail_because": "governance record carries no case-level human_action"
+  },
+  {
+    "file": "invalid-13-governance-no-scope.json",
+    "must_fail_because": "boundary must define the population it covers"
+  },
+  {
+    "file": "invalid-14-governance-unversioned-ruleset.json",
+    "must_fail_because": "rule set must be versioned for per-condition traceability"
+  },
+  {
+    "file": "invalid-15-governance-no-structured-reasoning.json",
+    "must_fail_because": "boundary approval needs structured reasoning, not narrative alone"
+  },
+  {
+    "file": "invalid-16-lineage-not-hash-bound.json",
+    "must_fail_because": "boundary lineage must bind to predecessor by hash"
+  },
+  {
+    "file": "invalid-17-suspend-without-target.json",
+    "must_fail_because": "suspend must identify the boundary affected"
+  },
+  {
+    "file": "invalid-18-withdraw-without-target.json",
+    "must_fail_because": "withdraw must identify the boundary affected"
+  },
+  {
+    "file": "invalid-19-retroactive-without-justification.json",
+    "must_fail_because": "retroactive authorization requires justification"
+  },
+  {
+    "file": "invalid-20-grandfather-without-population.json",
+    "must_fail_because": "grandfathering requires population, deadline and rationale"
+  },
+  {
+    "file": "invalid-21-governance-uses-case-vocabulary.json",
+    "must_fail_because": "governance reasoning has its own Tier A vocabulary"
+  },
+  {
+    "file": "invalid-22-missing-attribution.json",
+    "must_fail_because": "attribution required in 100% of records"
+  },
+  {
+    "file": "invalid-23-probe-not-sandboxed.json",
+    "must_fail_because": "seeded probe must assert sandboxed true"
+  },
+  {
+    "file": "invalid-24-probe-no-ground-truth.json",
+    "must_fail_because": "probe must record ground-truth provenance and owner"
+  },
+  {
+    "file": "invalid-25-reconstructed-claiming-contemporaneous.json",
+    "must_fail_because": "reconstructed records cannot claim contemporaneity"
+  },
+  {
+    "file": "invalid-26-no-chain-id.json",
+    "must_fail_because": "sequence is meaningless without a chain identifier"
+  },
+  {
+    "file": "invalid-27-chain-break-no-prev-hash.json",
+    "must_fail_because": "non-genesis record must carry prev_record_hash"
+  },
+  {
+    "file": "invalid-28-missing-canonicalization.json",
+    "must_fail_because": "hash not reproducible without fixed canonicalization"
+  },
+  {
+    "file": "invalid-29-tierb-missing-library-version.json",
+    "must_fail_because": "tier_b codes must be version-stamped"
+  },
+  {
+    "file": "invalid-30-modify-without-detail.json",
+    "must_fail_because": "modify requires modification_detail"
+  },
+  {
+    "file": "invalid-31-escalate-without-target.json",
+    "must_fail_because": "escalate requires ownership.escalation_to"
+  },
+  {
+    "file": "invalid-32-misspelled-nested-field.json",
+    "must_fail_because": "typo must not pass silently"
+  },
+  {
+    "file": "invalid-33-linked-event-two-payloads.json",
+    "must_fail_because": "a linked event carries exactly one payload matching its type"
+  },
+  {
+    "file": "invalid-34-linked-event-payload-type-mismatch.json",
+    "must_fail_because": "payload must match declared event_type"
+  },
+  {
+    "file": "invalid-35-judgment-record-claims-passed-boundary.json",
+    "must_fail_because": "a decision passing every condition would have auto-executed; it cannot be a judgment_record"
+  },
+  {
+    "file": "invalid-36-boundary-evaluation-no-failed-condition.json",
+    "must_fail_because": "all_conditions_passed false but no condition reported as failed — internally inconsistent"
+  },
+  {
+    "file": "invalid-37-auto-execution-reports-failed-condition.json",
+    "must_fail_because": "auto-execution cannot report a failed condition even if the summary flag says otherwise"
+  },
+  {
+    "file": "invalid-38-boundary-evaluation-not-hash-bound.json",
+    "must_fail_because": "boundary evaluation must bind to the evaluated boundary by hash"
+  },
+  {
+    "file": "invalid-39-judgment-record-claims-authority.json",
+    "must_fail_because": "nothing authorized a human-reviewed decision; use boundary_evaluation"
+  },
+  {
+    "file": "invalid-40-auto-execution-with-boundary-evaluation.json",
+    "must_fail_because": "auto-execution records authority, not failed evaluation"
+  },
+  {
+    "file": "invalid-41-governance-with-boundary-evaluation.json",
+    "must_fail_because": "governance records establish boundaries; they are not evaluated against them"
+  },
+  {
+    "file": "invalid-42-auto-execution-no-recommended-action.json",
+    "must_fail_because": "auto-execution must distinguish the AI recommendation from the action actually executed"
+  },
+  {
+    "file": "invalid-43-auto-execution-no-executed-action.json",
+    "must_fail_because": "auto-execution must record the action actually made operative"
+  },
+  {
+    "file": "invalid-44-human-record-claims-automated-execution.json",
+    "must_fail_because": "automated_execution is prohibited on a human Judgment Record"
+  }
+]
