@@ -1,5 +1,8 @@
 # JA-ES — Judgment Assurance Evidence Schema v0.6
 
+![verify](https://github.com/judgmentassurance/ja-es/actions/workflows/verify.yml/badge.svg)
+
+
 Machine-readable specification for evidence of human judgment over AI-mediated
 consequential decisions.
 
@@ -37,6 +40,7 @@ carries a verifiable link back to it.
 | `test-invalid/` | 44 records that MUST fail schema validation. |
 | `test-integrity/` | 7 records that are schema-valid but MUST fail verification. |
 | `test-action-verification/` | Three sealed, schema-valid scenarios that MUST fail cross-record action verification. |
+| `guard-prototype/` | JA Guard population-completeness reconciliation: schema, retained manifests, and its own verifier. |
 | `verify.py` | Reference verifier: schema + hashes + chains + cross-record links. |
 | `build_examples.py` | Reference implementation of the hashing and chaining rules. |
 | `guard-prototype/` | Separate JA Guard population-reconciliation prototype: schema, retained manifests, a worked exception case and its verifier. It is deliberately not a fourth JA-ES record type. |
