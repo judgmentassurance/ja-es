@@ -10,10 +10,12 @@ consequential decisions.
 
 ## The three record types
 
+The `judgment_record` implements the Minimum Control Standard's individual-decision evidence requirements. The `governance_judgment_record` and `auto_execution_log` are JA-ES extensions that support the framework beyond that minimum. See [CONFORMANCE.md](CONFORMANCE.md).
+
 | Type | What it evidences |
 |---|---|
-| `judgment_record` | An Atomic Unit at an individual decision: a human accepted, modified, rejected, escalated or deferred an AI output, with structured reasoning and named ownership. |
-| `governance_judgment_record` | An Atomic Unit at the Governance layer: a named person decided a defined population may proceed *without* contemporaneous human review, and recorded why. |
+| `judgment_record` | The evidentiary output of a completed Atomic Unit at an individual decision: a human accepted, modified, rejected, escalated or deferred an AI output, with structured reasoning and named ownership. |
+| `governance_judgment_record` | The evidentiary output of a completed Atomic Unit at the Governance layer: a named person decided a defined population may proceed *without* contemporaneous human review, and recorded why. |
 | `auto_execution_log` | A decision executed inside such a boundary, linked by id and hash to the governance judgment that authorized it, with per-condition proof and an explicit record of the action actually executed. |
 
 A `judgment_record` may also carry `boundary_evaluation` — evidence that the machine evaluated this recorded decision against the boundary, it **failed**, and it was routed to a human. That is the inverse of `authorizing_boundary`. Population completeness still requires independent Guard reconciliation.
@@ -34,13 +36,12 @@ carries a verifiable link back to it.
 | File | What it is |
 |---|---|
 | `JA-ES-v0.6-specification.md` | Read first. Plain-English spec and rationale. |
-| `evidence-record.schema.json` | The three immutable record types. |
+| `evidence-record.schema.json` | The three append-only and tamper-evident record types. |
 | `linked-event.schema.json` | Post-decision events: outcomes, corrections, probe evaluations. |
 | `examples/` | Eight valid records, hashes computed and chains verified. |
 | `test-invalid/` | 44 records that MUST fail schema validation. |
 | `test-integrity/` | 7 records that are schema-valid but MUST fail verification. |
 | `test-action-verification/` | Three sealed, schema-valid scenarios that MUST fail cross-record action verification. |
-| `guard-prototype/` | JA Guard population-completeness reconciliation: schema, retained manifests, and its own verifier. |
 | `verify.py` | Reference verifier: schema + hashes + chains + cross-record links. |
 | `build_examples.py` | Reference implementation of the hashing and chaining rules. |
 | `guard-prototype/` | Separate JA Guard population-reconciliation prototype: schema, retained manifests, a worked exception case and its verifier. It is deliberately not a fourth JA-ES record type. |
