@@ -1,7 +1,7 @@
 # JA-ES — Judgment Assurance Evidence Schema v0.6
 
 ![verify](https://github.com/judgmentassurance/ja-es/actions/workflows/verify.yml/badge.svg)
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21501112.svg)](https://doi.org/10.5281/zenodo.21501112)
 
 Machine-readable specification for evidence of human judgment over AI-mediated
 consequential decisions.
