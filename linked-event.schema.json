@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://judgmentassurance.com/schema/ja-es/v0.6/linked-event.schema.json",
+  "$id": "https://raw.githubusercontent.com/judgmentassurance/ja-es/main/linked-event.schema.json",
   "title": "Judgment Assurance Linked Event Record (JA-ES) v0.6",
   "description": "Post-decision information about an existing Judgment Record. Judgment Records are immutable once written; anything learned afterwards \u2014 a realized outcome, a correction, a probe evaluation \u2014 is carried here as a separate, separately hashed record that references the original by id and hash. This preserves the append-only property that the tamper-evidence claim depends on. Judgment Assurance (Kavalir, 2026). CC BY 4.0.",
   "type": "object",
