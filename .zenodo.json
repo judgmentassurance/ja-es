@@ -18,20 +18,5 @@
     "accountability",
     "JSON Schema",
     "RFC 8785"
-  ],
-  "_comment_related_identifiers": "PLACEHOLDERS - replace the identifier values below with the real ones before publishing, or delete any entry you are not ready to link. Zenodo will reject malformed identifiers.",
-  "related_identifiers": [
-    {
-      "identifier": "PLACEHOLDER-REPLACE-WITH-SSRN-URL",
-      "relation": "isSupplementedBy",
-      "scheme": "url",
-      "resource_type": "publication-preprint"
-    },
-    {
-      "identifier": "PLACEHOLDER-REPLACE-WITH-CROSSWALK-DOI",
-      "relation": "references",
-      "scheme": "doi",
-      "resource_type": "publication-report"
-    }
   ]
 }
