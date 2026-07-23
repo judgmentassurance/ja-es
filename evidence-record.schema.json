@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://judgmentassurance.com/schema/ja-es/v0.6/evidence-record.schema.json",
+  "$id": "https://raw.githubusercontent.com/judgmentassurance/ja-es/main/evidence-record.schema.json",
   "title": "Judgment Assurance Evidence Schema (JA-ES) v0.6 \u2014 Evidence Record",
   "description": "Open specification for decision evidence under the Judgment Assurance framework. Three record types: (1) judgment_record \u2014 the evidentiary output of an Atomic Unit at the point of an individual decision; (2) governance_judgment_record \u2014 the evidentiary output of an Atomic Unit at the Governance layer, establishing a reliance boundary under which decisions may proceed without contemporaneous human review; (3) auto_execution_log \u2014 a decision resolved inside such a boundary, linked by id and hash to the governance judgment that authorized it and explicitly recording the action actually executed. Judgment records arising from a failed boundary evaluation carry boundary_evaluation, the inverse of authorizing_boundary, so that routing is evidenced in both directions. Post-decision information is carried separately; see linked-event.schema.json. Judgment Assurance (Kavalir, 2026). CC BY 4.0.",
   "type": "object",
